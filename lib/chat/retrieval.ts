@@ -70,6 +70,12 @@ export async function retrieveChunks(
   });
 }
 
+/** What is stored and shown to the user (the full passage stays server-side). */
+export function toChatSource(chunk: RetrievedChunk): ChatSource {
+  const { documentId, documentName, chunkIndex, excerpt, similarity, page } = chunk;
+  return { documentId, documentName, chunkIndex, excerpt, similarity, ...(page ? { page } : {}) };
+}
+
 /** Course passages for the model, numbered like the sources shown to the user. */
 export function formatSources(chunks: RetrievedChunk[]): string {
   if (chunks.length === 0) return "";

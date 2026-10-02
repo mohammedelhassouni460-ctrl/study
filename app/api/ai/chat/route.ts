@@ -5,7 +5,7 @@ import { reserveAiCredits } from "@/lib/ai/credits";
 import { chatSystemPrompt } from "@/lib/ai/prompts";
 import { track } from "@/lib/analytics/server";
 import { getCurrentProfile } from "@/lib/auth/session";
-import { formatSources, retrieveChunks } from "@/lib/chat/retrieval";
+import { formatSources, retrieveChunks, toChatSource } from "@/lib/chat/retrieval";
 import { apiHandler, parseJsonBody } from "@/lib/http/api";
 import { AppError, GENERIC_ERROR_MESSAGE } from "@/lib/http/errors";
 import { chatRequestSchema } from "@/lib/validations/ai";
@@ -42,7 +42,7 @@ export const POST = apiHandler({ rateLimit: "aiChat" }, async (request, { user, 
         .order("created_at", { ascending: false })
         .limit(HISTORY_MESSAGES),
     ]);
-    sources = chunks.map(({ content: _content, ...source }) => source);
+    sources = chunks.map(toChatSource);
 
     const { error: insertError } = await supabase
       .from("chat_messages")

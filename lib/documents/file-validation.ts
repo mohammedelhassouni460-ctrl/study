@@ -48,7 +48,6 @@ export function validateUploadMetadata(file: { name: string; size: number; type:
 /** Sanitised display name: no path, no control characters, max 255 chars. */
 export function sanitizeFileName(name: string): string {
   const base = name.split(/[\\/]/).pop() ?? "document";
-  // eslint-disable-next-line no-control-regex
   const cleaned = base.replace(/[\u0000-\u001f\u007f]/g, "").trim();
   return (cleaned || "document").slice(0, 255);
 }
