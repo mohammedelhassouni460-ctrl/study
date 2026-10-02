@@ -25,7 +25,7 @@ export function embeddingsProvider(): EmbeddingsProvider {
 const BATCH_SIZE = 64;
 
 async function voyageEmbed(texts: string[], inputType: EmbeddingInputType): Promise<number[][]> {
-  const res = await fetch("https://api.voyageai.com/v1/embeddings", {
+  const res = await fetch(`${process.env.VOYAGE_BASE_URL || "https://api.voyageai.com"}/v1/embeddings`, {
     method: "POST",
     headers: { Authorization: `Bearer ${process.env.VOYAGE_API_KEY}`, "Content-Type": "application/json" },
     body: JSON.stringify({

@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import { expect, type Page } from "@playwright/test";
 
 export function uniqueEmail(prefix = "e2e") {
@@ -32,4 +34,10 @@ export async function completeOnboarding(page: Page, subjectName = "Microéconom
   await expect(page).toHaveURL(/\/subjects\/[0-9a-f-]+\/documents/);
   const match = page.url().match(/subjects\/([0-9a-f-]+)\//);
   return match![1];
+}
+
+/** Uploads a fixture on the current subject's documents page and waits until it's ready. */
+export async function uploadFixture(page: Page, file = "microeconomie-chapitre-2.txt") {
+  await page.getByTestId("document-input").setInputFiles(path.join(__dirname, "..", "fixtures", file));
+  await expect(page.getByText(`« ${file} » est prêt.`)).toBeVisible({ timeout: 45_000 });
 }
