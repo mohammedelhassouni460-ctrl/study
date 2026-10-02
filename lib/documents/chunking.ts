@@ -30,7 +30,35 @@ export function normalizeText(raw: string): string {
     .trim();
 }
 
-const HEADING_RE = /^(?:(?:chapitre|partie|section|chapter)\s+[\divxlc]+|[\divxlc]+[.)]\s+\S|#{1,6}\s+\S)/i;
+export const HEADING_RE = /^(?:(?:chapitre|partie|section|chapter)\s+[\divxlc]+|[\divxlc]+[.)]\s+\S|#{1,6}\s+\S)/i;
+
+/**
+ * PDF text comes out as visual lines without paragraph breaks. Rebuilds
+ * paragraphs: a line ending a sentence noticeably before the right margin, a
+ * heading, or a blank line starts a new paragraph.
+ */
+export function reflowLines(pageText: string): string {
+  const lines = pageText.split("\n").map((l) => l.trim());
+  const maxLength = Math.max(0, ...lines.map((l) => l.length));
+  const out: string[] = [];
+  let current = "";
+  let previous = "";
+  for (const line of lines) {
+    const isHeading = line.length > 0 && line.length < 120 && HEADING_RE.test(line);
+    const previousEndsParagraph =
+      previous !== "" && /[.!?:»)]$/.test(previous) && previous.length < maxLength * 0.85;
+    const previousIsHeading = previous !== "" && previous.length < 120 && HEADING_RE.test(previous);
+    if (line === "" || isHeading || previousEndsParagraph || previousIsHeading) {
+      if (current) out.push(current);
+      current = line;
+    } else {
+      current = current ? `${current} ${line}` : line;
+    }
+    previous = line;
+  }
+  if (current) out.push(current);
+  return out.filter(Boolean).join("\n\n");
+}
 
 function splitLongParagraph(paragraph: string, maxChars: number): string[] {
   const sentences = paragraph.match(/[^.!?…]+[.!?…]+[\])'"»]*\s*|[^.!?…]+$/g) ?? [paragraph];
@@ -105,4 +133,21 @@ export function chunkText(raw: string, options: ChunkOptions = {}): TextChunk[] 
   if (buffer.length > 0 && !(chunks.length > 0 && bufferLength <= overlapChars + 2)) flush();
 
   return chunks;
+}
+
+/** Headings found in a text ("Chapitre 2 — …", "1. …", "# …"), in order, deduplicated. */
+export function extractHeadings(text: string, limit = 12): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const paragraph of normalizeText(text).split(/\n\n+/)) {
+    const line = paragraph.split("\n")[0].trim();
+    if (line.length < 3 || line.length >= 120 || !HEADING_RE.test(line)) continue;
+    const name = line.replace(/^#+\s*/, "").replace(/\s+/g, " ");
+    const key = name.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(name);
+    if (out.length >= limit) break;
+  }
+  return out;
 }

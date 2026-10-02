@@ -23,7 +23,7 @@ export function MobileNav({ footer }: { footer: React.ReactNode }) {
         <SheetDescription className="sr-only">Navigation de l&apos;application</SheetDescription>
         <Logo href="/dashboard" className="mb-4 px-2" />
         <SidebarNav onNavigate={() => setOpen(false)} />
-        <div className="mt-auto grid gap-3">{footer}</div>
+        <div className="mt-auto grid grid-cols-[minmax(0,1fr)] gap-3">{footer}</div>
       </SheetContent>
     </Sheet>
   );

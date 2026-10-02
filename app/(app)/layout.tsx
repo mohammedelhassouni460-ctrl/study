@@ -42,7 +42,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <ThemeToggle />
         </div>
         <SidebarNav />
-        <div className="mt-auto grid gap-3">{footer}</div>
+        <div className="mt-auto grid grid-cols-[minmax(0,1fr)] gap-3">{footer}</div>
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b bg-background/80 px-4 backdrop-blur lg:hidden">

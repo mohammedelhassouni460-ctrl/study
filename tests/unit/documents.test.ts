@@ -81,3 +81,22 @@ describe("chunkText", () => {
     expect(estimateTokens(huge)).toBeGreaterThan(1500);
   });
 });
+
+describe("reflowLines", () => {
+  it("rebuilds paragraphs and headings from PDF lines", async () => {
+    const { reflowLines } = await import("@/lib/documents/chunking");
+    const page = [
+      "Chapitre 2 — L'élasticité",
+      "1. Élasticité-prix de la demande",
+      "L'élasticité-prix de la demande mesure la variation relative de la quantité demandée",
+      "résultant d'une variation relative du prix.",
+      "Si le prix augmente de 10 % et que la quantité baisse de 20 %, l'élasticité vaut -2.",
+    ].join("\n");
+    expect(reflowLines(page).split("\n\n")).toEqual([
+      "Chapitre 2 — L'élasticité",
+      "1. Élasticité-prix de la demande",
+      "L'élasticité-prix de la demande mesure la variation relative de la quantité demandée résultant d'une variation relative du prix.",
+      "Si le prix augmente de 10 % et que la quantité baisse de 20 %, l'élasticité vaut -2.",
+    ]);
+  });
+});

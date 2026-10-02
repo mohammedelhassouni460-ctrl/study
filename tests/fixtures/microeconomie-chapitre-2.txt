@@ -1,0 +1,27 @@
+Chapitre 2 — L'élasticité
+
+1. Élasticité-prix de la demande
+
+L'élasticité-prix de la demande mesure la variation relative de la quantité demandée résultant d'une variation relative du prix. Elle se calcule ainsi : Ep = (% variation de la quantité demandée) / (% variation du prix).
+
+Si le prix d'un bien augmente de 10 % et que la quantité demandée baisse de 20 %, l'élasticité vaut -20 / 10 = -2. La demande est alors élastique.
+
+Interprétation : lorsque |Ep| > 1, la demande est élastique : les consommateurs réagissent fortement au prix. Lorsque |Ep| < 1, la demande est inélastique : la quantité demandée varie peu. Lorsque |Ep| = 1, l'élasticité est unitaire et la recette totale ne change pas.
+
+Les biens de première nécessité (pain, électricité, médicaments) ont généralement une demande inélastique. Les biens de luxe et les biens ayant de nombreux substituts ont une demande élastique.
+
+2. Élasticité-revenu
+
+L'élasticité-revenu mesure la sensibilité de la demande à une variation du revenu : Er = (% variation de la quantité) / (% variation du revenu). Un bien normal a une élasticité-revenu positive ; un bien inférieur a une élasticité-revenu négative ; un bien de luxe a une élasticité-revenu supérieure à 1.
+
+3. Élasticité croisée
+
+L'élasticité croisée mesure la réaction de la demande d'un bien X à une variation du prix d'un bien Y. Elle est positive pour des biens substituts (thé et café) et négative pour des biens complémentaires (imprimante et cartouches).
+
+Chapitre 3 — Les externalités
+
+Une externalité apparaît lorsque l'activité d'un agent affecte le bien-être d'un autre agent sans que cet effet soit compensé par le marché. La pollution d'une usine est une externalité négative ; la vaccination ou la recherche fondamentale produisent des externalités positives.
+
+En présence d'externalités négatives, le marché produit une quantité supérieure à l'optimum social, car le coût social dépasse le coût privé. L'État peut corriger cette défaillance de marché par une taxe pigouvienne égale au coût marginal externe, par des normes, ou par un marché de droits à polluer.
+
+Le théorème de Coase affirme que si les droits de propriété sont bien définis et que les coûts de transaction sont faibles, la négociation privée permet d'atteindre une allocation efficace, quelle que soit l'attribution initiale des droits.
