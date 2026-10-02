@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { averageMastery } from "@/lib/learning/mastery";
+import type { PlannerSubject } from "@/lib/learning/planner";
 import { createClient } from "@/lib/supabase/server";
 
 export interface SubjectOverview {
@@ -56,3 +57,14 @@ export const getSubject = cache(async (id: string) => {
   const { data } = await supabase.from("subjects").select("*").eq("id", id).maybeSingle();
   return data;
 });
+
+/** Shape expected by the planner engine. */
+export function toPlannerSubjects(subjects: SubjectOverview[]): PlannerSubject[] {
+  return subjects.map((s) => ({
+    id: s.id,
+    name: s.name,
+    examDate: s.exam_date,
+    dueFlashcards: s.dueFlashcards,
+    topics: s.topics.map((t) => ({ id: t.id, name: t.name, mastery: t.mastery_score })),
+  }));
+}

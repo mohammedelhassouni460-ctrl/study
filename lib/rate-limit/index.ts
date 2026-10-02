@@ -29,6 +29,7 @@ export const RATE_LIMITS = {
   quizSubmit: { limit: 30, windowSeconds: 60 },
   flashcardReview: { limit: 120, windowSeconds: 60 },
   billing: { limit: 10, windowSeconds: 60 },
+  studyPlan: { limit: 10, windowSeconds: 60 },
 } satisfies Record<string, RateLimitRule>;
 
 export type RateLimitName = keyof typeof RATE_LIMITS;

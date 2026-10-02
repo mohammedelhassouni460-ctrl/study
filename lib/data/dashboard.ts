@@ -6,7 +6,7 @@ import { buildDailySession, type PlannedSession } from "@/lib/learning/planner";
 import { computeStreak, computeXp, estimateStudyMinutes } from "@/lib/learning/stats";
 import { createClient } from "@/lib/supabase/server";
 
-import { listSubjectOverviews, type SubjectOverview } from "./subjects";
+import { listSubjectOverviews, toPlannerSubjects, type SubjectOverview } from "./subjects";
 
 export interface DashboardData {
   subjects: SubjectOverview[];
@@ -92,13 +92,7 @@ export async function getDashboardData(userId: string, timezone: string, dailyMi
         const live = buildDailySession({
           startDate: today,
           dailyMinutes,
-          subjects: subjects.map((s) => ({
-            id: s.id,
-            name: s.name,
-            examDate: s.exam_date,
-            dueFlashcards: s.dueFlashcards,
-            topics: s.topics.map((t) => ({ id: t.id, name: t.name, mastery: t.mastery_score })),
-          })),
+          subjects: toPlannerSubjects(subjects),
         });
         return {
           items: live.items.map((i) => ({ ...i, subjectName: subjectNames.get(i.subjectId) ?? "" })),
