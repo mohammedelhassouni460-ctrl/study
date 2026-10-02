@@ -30,4 +30,5 @@ export interface ChatSource {
   chunkIndex: number;
   excerpt: string;
   similarity: number;
+  page?: number;
 }

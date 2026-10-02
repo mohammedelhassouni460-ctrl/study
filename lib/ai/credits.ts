@@ -34,18 +34,18 @@ async function assertActionQuota(userId: string, action: AiAction, limits: PlanL
   }
 }
 
+export interface CreditReservation {
+  /** Records the tokens actually used (the credits stay consumed). */
+  complete(usage?: AiUsage): Promise<void>;
+  /** Cancels the reservation: the credits are given back. */
+  refund(): Promise<void>;
+}
+
 /**
- * Runs an AI operation under the credit system:
- * 1. checks per-action quotas,
- * 2. atomically reserves the credits (fails if the monthly quota would be exceeded),
- * 3. runs the operation,
- * 4. records token usage on success, or refunds the reservation on failure.
+ * Checks per-action quotas, then atomically reserves the action's credits
+ * (fails if the monthly quota would be exceeded).
  */
-export async function withAiCredits<T>(
-  userId: string,
-  action: AiAction,
-  run: () => Promise<{ result: T; usage?: AiUsage }>,
-): Promise<T> {
+export async function reserveAiCredits(userId: string, action: AiAction): Promise<CreditReservation> {
   const { limits } = await getBillingState(userId);
   await assertActionQuota(userId, action, limits);
 
@@ -71,17 +71,36 @@ export async function withAiCredits<T>(
     );
   }
 
-  try {
-    const { result, usage } = await run();
-    if (usage) {
+  return {
+    async complete(usage) {
+      if (!usage) return;
       await admin
         .from("ai_usage")
         .update({ tokens_input: usage.inputTokens, tokens_output: usage.outputTokens, model: usage.model })
         .eq("id", usageId);
-    }
+    },
+    async refund() {
+      await admin.from("ai_usage").delete().eq("id", usageId);
+    },
+  };
+}
+
+/**
+ * Runs an AI operation under the credit system: reserve, run, then record
+ * token usage on success or refund the reservation on failure.
+ */
+export async function withAiCredits<T>(
+  userId: string,
+  action: AiAction,
+  run: () => Promise<{ result: T; usage?: AiUsage }>,
+): Promise<T> {
+  const reservation = await reserveAiCredits(userId, action);
+  try {
+    const { result, usage } = await run();
+    await reservation.complete(usage);
     return result;
   } catch (err) {
-    await admin.from("ai_usage").delete().eq("id", usageId);
+    await reservation.refund();
     throw err;
   }
 }
