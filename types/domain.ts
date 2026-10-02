@@ -21,6 +21,7 @@ export interface PublicQuizQuestion {
   position: number;
   question: string;
   choices: string[];
+  topicName: string | null;
 }
 
 export interface ChatSource {

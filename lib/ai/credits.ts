@@ -12,8 +12,8 @@ const DAY_MS = 86_400_000;
 
 /** Per-action quotas of the plan (on top of the monthly credits). */
 async function assertActionQuota(userId: string, action: AiAction, limits: PlanLimits) {
-  if (action === "quiz" && limits.quizzesPerWeek !== null) {
-    const count = await countUsageSince(userId, "quiz", new Date(Date.now() - 7 * DAY_MS));
+  if ((action === "quiz" || action === "exam") && limits.quizzesPerWeek !== null) {
+    const count = await countUsageSince(userId, ["quiz", "exam"], new Date(Date.now() - 7 * DAY_MS));
     if (count >= limits.quizzesPerWeek) {
       throw new AppError(
         "quota_exceeded",

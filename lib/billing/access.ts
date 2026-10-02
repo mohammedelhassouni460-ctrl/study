@@ -52,13 +52,13 @@ export const getBillingState = cache(async (userId: string): Promise<BillingStat
 });
 
 /** Count of ai_usage rows for an action since a date (usage rows cannot be deleted by users). */
-export async function countUsageSince(userId: string, action: string, since: Date): Promise<number> {
+export async function countUsageSince(userId: string, action: string | string[], since: Date): Promise<number> {
   const supabase = await createClient();
   const { count } = await supabase
     .from("ai_usage")
     .select("id", { count: "exact", head: true })
     .eq("user_id", userId)
-    .eq("action", action)
+    .in("action", Array.isArray(action) ? action : [action])
     .gte("created_at", since.toISOString());
   return count ?? 0;
 }

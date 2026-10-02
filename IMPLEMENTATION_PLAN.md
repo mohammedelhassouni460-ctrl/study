@@ -113,7 +113,7 @@ Les mutations simples (matières, profil, onboarding, sessions du planning) pass
 - RLS sur toutes les tables ; service role uniquement dans `lib/supabase/admin.ts` (`server-only`).
 - Upload : liste blanche d'extensions/MIME, taille max (15 Mo), vérification des magic bytes au traitement.
 - Rate limiting sur les endpoints IA et le traitement des documents.
-- Crédits IA vérifiés avant chaque appel, consommés après succès (`ai_usage`).
+- Crédits IA réservés atomiquement avant chaque appel, remboursés en cas d'échec (`ai_usage`).
 - Webhook Stripe : signature vérifiée, Stripe = source de vérité (jamais le redirect).
 - Erreurs : messages compréhensibles, jamais de stack trace (`error.tsx`, `lib/http/errors.ts`).
 - En-têtes de sécurité dans `next.config.ts`.
@@ -160,6 +160,13 @@ chunking, planner. E2E (Playwright) : signup, création de matière, upload de d
   le chat reste fonctionnel.
 - **Modèle IA** : `claude-opus-5-5` par défaut, configurable via `ANTHROPIC_MODEL` (ex. `claude-sonnet-5-5`
   pour réduire les coûts). Fallback serveur Anthropic activé (`fallbacks: "default"`) en cas de refus.
-- **Crédits** : vérification avant appel + enregistrement après succès. Une course entre deux requêtes
-  simultanées peut dépasser le quota d'un appel au maximum (accepté pour le MVP, documenté).
+- **Crédits** : réservation atomique AVANT l'appel IA (fonction SQL `reserve_ai_credits` avec verrou
+  consultatif par utilisateur, aucune course possible), puis complétion avec les tokens consommés après
+  succès, ou suppression de la réservation (remboursement) en cas d'échec.
+- **Réponses des quiz** : RLS autorise un utilisateur à lire ses propres lignes, ce qui aurait exposé
+  `quiz_questions.correct_answer` via l'API REST. Les colonnes `correct_answer` et `explanation` sont donc
+  retirées du rôle `authenticated` (privilèges par colonne) ; les questions sont écrites et corrigées côté
+  serveur (service role, toujours filtré par `user_id`), et la correction n'est affichée qu'après une
+  tentative terminée.
+- **Mode examen** : coûte 25 crédits et compte dans la limite de 3 quiz/semaine du plan Gratuit.
 - **Langue** : interface en français ; code et identifiants en anglais.
