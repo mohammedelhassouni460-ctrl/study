@@ -17,3 +17,8 @@ export function safeRedirectPath(value: unknown, fallback = "/dashboard") {
   if (!value.startsWith("/") || value.startsWith("//") || value.startsWith("/\\")) return fallback;
   return value;
 }
+
+/** Escapes LIKE/ILIKE wildcards so user input matches literally. */
+export function escapeLike(value: string) {
+  return value.replace(/[\\%_]/g, (c) => `\\${c}`);
+}
