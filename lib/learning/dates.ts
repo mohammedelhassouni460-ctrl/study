@@ -31,7 +31,7 @@ export function startOfMonthUTC(now: Date = new Date()): Date {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
 }
 
-const frenchDate = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long" });
+const frenchDate = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", timeZone: "UTC" });
 const frenchWeekday = new Intl.DateTimeFormat("fr-FR", {
   weekday: "long",
   day: "numeric",
