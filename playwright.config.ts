@@ -6,6 +6,8 @@ import { defineConfig, devices } from "@playwright/test";
  */
 const PORT = Number(process.env.E2E_PORT ?? 3100);
 const MOCK_PORT = 4010;
+/** Test-only Stripe values: webhooks are signed locally with this secret. */
+export const E2E_STRIPE_WEBHOOK_SECRET = "whsec_e2e_local_test_secret";
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -50,6 +52,10 @@ export default defineConfig({
             ANTHROPIC_BASE_URL: `http://127.0.0.1:${MOCK_PORT}`,
             VOYAGE_API_KEY: "test-key",
             VOYAGE_BASE_URL: `http://127.0.0.1:${MOCK_PORT}/voyage`,
+            STRIPE_SECRET_KEY: "sk_test_e2e_not_a_real_key",
+            STRIPE_WEBHOOK_SECRET: E2E_STRIPE_WEBHOOK_SECRET,
+            STRIPE_PRICE_PRO_MONTHLY: "price_e2e_monthly",
+            STRIPE_PRICE_PRO_YEARLY: "price_e2e_yearly",
           },
         },
       ],

@@ -41,3 +41,26 @@ export async function uploadFixture(page: Page, file = "microeconomie-chapitre-2
   await page.getByTestId("document-input").setInputFiles(path.join(__dirname, "..", "fixtures", file));
   await expect(page.getByText(`« ${file} » est prêt.`)).toBeVisible({ timeout: 45_000 });
 }
+
+/** Local Supabase admin access for tests (reads the demo keys from .env.local). */
+function localEnv(): Record<string, string> {
+  const fs = require("node:fs") as typeof import("node:fs");
+  const file = path.join(__dirname, "..", "..", ".env.local");
+  const out: Record<string, string> = {};
+  for (const line of fs.readFileSync(file, "utf8").split("\n")) {
+    const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
+    if (m) out[m[1]] = m[2].trim();
+  }
+  return out;
+}
+
+export async function getUserIdByEmail(email: string): Promise<string> {
+  const env = localEnv();
+  const res = await fetch(`${env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/admin/users?per_page=1000`, {
+    headers: { apikey: env.SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}` },
+  });
+  const json = (await res.json()) as { users: { id: string; email: string }[] };
+  const user = json.users.find((u) => u.email === email);
+  if (!user) throw new Error(`User ${email} not found`);
+  return user.id;
+}
