@@ -35,7 +35,7 @@ export function TodaySession({ session }: { session: DashboardData["todaySession
         {session.items.length === 0 ? (
           <p className="text-sm text-muted-foreground">Aucune activité prévue pour l&apos;instant.</p>
         ) : (
-          <ol className="grid gap-2">
+          <ol className="grid grid-cols-[minmax(0,1fr)] gap-2">
             {session.items.map((item, index) => {
               const Icon = ICONS[item.kind];
               const topic = item.title.split(" — ")[1];

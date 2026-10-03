@@ -26,7 +26,7 @@ export default async function QuizListPage({ params, searchParams }: PageProps<"
   ]);
 
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-3">
       <div className="content-start">
         <QuizGenerator
           subjectId={id}
@@ -54,11 +54,11 @@ export default async function QuizListPage({ params, searchParams }: PageProps<"
             }
           />
         ) : (
-          <section aria-labelledby="quiz-history" className="grid gap-3">
+          <section aria-labelledby="quiz-history" className="grid min-w-0 gap-3">
             <h2 id="quiz-history" className="text-sm font-semibold">
               Tes quiz
             </h2>
-            <ul className="grid gap-2">
+            <ul className="grid grid-cols-[minmax(0,1fr)] gap-2">
               {quizzes.map((quiz) => {
                 const attempts = quiz.quiz_attempts.filter((a) => a.completed_at);
                 const best = attempts.length ? Math.max(...attempts.map((a) => Number(a.percentage))) : null;
@@ -75,7 +75,7 @@ export default async function QuizListPage({ params, searchParams }: PageProps<"
                           {attempts.length > 0 && ` · ${attempts.length} tentative${attempts.length > 1 ? "s" : ""}`}
                         </p>
                       </div>
-                      <Badge variant="secondary">{DIFFICULTY_LABELS[quiz.difficulty]}</Badge>
+                      <Badge variant="secondary" className="hidden sm:inline-flex">{DIFFICULTY_LABELS[quiz.difficulty]}</Badge>
                       {best !== null ? (
                         <Badge variant={best >= 70 ? "success" : best >= 50 ? "warning" : "destructive"}>{Math.round(best)} %</Badge>
                       ) : (

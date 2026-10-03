@@ -44,14 +44,14 @@ export default async function SubjectOverviewPage({ params }: PageProps<"/subjec
 
   return (
     <div className="grid gap-6">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard icon={BrainIcon} label="Maîtrise" value={`${mastery} %`} hint={<MasteryBar score={mastery} className="mt-1" />} />
         <StatCard icon={FileTextIcon} label="Documents" value={docsRes.count ?? 0} />
         <StatCard icon={LayersIcon} label="Flashcards" value={cardsRes.count ?? 0} hint={`${dueRes.count ?? 0} à revoir`} />
         <StatCard icon={ListChecksIcon} label="Quiz" value={quizzesRes.count ?? 0} />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-5">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-5">
         <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle>Concepts</CardTitle>

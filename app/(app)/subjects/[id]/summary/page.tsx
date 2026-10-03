@@ -32,7 +32,7 @@ export default async function SummaryPage({ params, searchParams }: PageProps<"/
   const content = selected ? summaryOutputSchema.safeParse(selected.content) : null;
 
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-3">
       <div className="grid content-start gap-6">
         <SummaryGenerator subjectId={id} documents={documents ?? []} />
         {summaries && summaries.length > 1 && (

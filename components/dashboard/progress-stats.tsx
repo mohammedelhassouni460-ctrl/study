@@ -17,10 +17,10 @@ export function ProgressStats({ weekly, locked }: { weekly: DashboardData["weekl
         <CardDescription>Score moyen aux quiz et flashcards révisées, sur 8 semaines</CardDescription>
       </CardHeader>
       <CardContent className={cn(locked && "pointer-events-none blur-sm select-none")} aria-hidden={locked}>
-        <div className="grid grid-cols-8 items-end gap-2" role="img" aria-label="Évolution hebdomadaire">
+        <div className="grid grid-cols-[repeat(8,minmax(0,1fr))] items-end gap-1 sm:gap-2" role="img" aria-label="Évolution hebdomadaire">
           {weekly.map((w) => (
             <div key={w.weekStart} className="grid gap-1 text-center">
-              <span className="text-xs font-medium tabular-nums">{w.quizAverage === null ? "—" : `${w.quizAverage} %`}</span>
+              <span className="truncate text-[10px] font-medium tabular-nums sm:text-xs">{w.quizAverage === null ? "—" : `${w.quizAverage} %`}</span>
               <div className="flex h-28 items-end justify-center gap-1">
                 <div
                   className="w-3 rounded-t bg-primary"
@@ -33,11 +33,11 @@ export function ProgressStats({ weekly, locked }: { weekly: DashboardData["weekl
                   title={`${w.reviews} flashcards révisées`}
                 />
               </div>
-              <span className="text-[10px] text-muted-foreground">{formatFrenchDate(w.weekStart)}</span>
+              <span className="truncate text-[10px] text-muted-foreground">{formatFrenchDate(w.weekStart)}</span>
             </div>
           ))}
         </div>
-        <div className="mt-4 flex gap-4 text-xs text-muted-foreground">
+        <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <span className="size-2.5 rounded-sm bg-primary" aria-hidden /> Score moyen aux quiz
           </span>

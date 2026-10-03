@@ -26,7 +26,7 @@ export function SummaryView({ content, meta }: { content: SummaryContent; meta?:
 
         {content.keyConcepts.length > 0 && (
           <Section icon={LightbulbIcon} title="Concepts clés">
-            <ul className="grid gap-3 sm:grid-cols-2">
+            <ul className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2">
               {content.keyConcepts.map((concept, i) => (
                 <li key={i} className="rounded-lg border bg-background/50 p-4">
                   <p className="font-medium">{concept.name}</p>

@@ -115,6 +115,12 @@
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
+  /* Single-column grids shrink with the viewport instead of growing to their
+     content's min-content width (long titles, badges). Any grid-cols-* utility
+     overrides this, since utilities win over the base layer. */
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -58,7 +58,7 @@ export function SubjectForm({
       <FormField id="description" label="Description (optionnel)" error={errors.description?.message}>
         <Textarea id="description" rows={2} placeholder="L2 Économie — Pr. Martin" {...form.register("description")} />
       </FormField>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
         <FormField id="examDate" label="Date d'examen" error={errors.examDate?.message}>
           <Input id="examDate" type="date" {...form.register("examDate")} />
         </FormField>

@@ -44,7 +44,7 @@ export default async function SubjectsPage() {
           action={<CreateSubjectDialog label="Créer ma première matière" />}
         />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {subjects.map((subject) => (
             <SubjectCard key={subject.id} subject={subject} />
           ))}

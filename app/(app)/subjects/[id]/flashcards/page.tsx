@@ -33,7 +33,7 @@ export default async function FlashcardsPage({ params }: PageProps<"/subjects/[i
   const session = due.slice(0, SESSION_SIZE).map(({ id, question, answer, topic }) => ({ id, question, answer, topic }));
 
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-3">
       <div className="grid content-start gap-6">
         <FlashcardGenerator subjectId={id} documents={documents ?? []} />
         <dl className="grid grid-cols-2 gap-3 text-center">

@@ -40,7 +40,7 @@ export function ProfileForm({ defaultValues }: { defaultValues: ProfileFormValue
       <FormField id="fullName" label="Prénom" error={errors.fullName?.message}>
         <Input id="fullName" autoComplete="given-name" aria-invalid={Boolean(errors.fullName)} {...form.register("fullName")} />
       </FormField>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
         <FormField id="educationLevel" label="Niveau d'études" error={errors.educationLevel?.message}>
           <Controller
             control={form.control}

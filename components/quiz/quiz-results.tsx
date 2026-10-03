@@ -50,7 +50,7 @@ export function QuizResults({
   return (
     <div className="mx-auto grid max-w-3xl gap-6">
       <Card>
-        <CardContent className="grid gap-4 pt-6 text-center sm:grid-cols-3 sm:text-left">
+        <CardContent className="grid grid-cols-[minmax(0,1fr)] gap-4 pt-6 text-center sm:grid-cols-3 sm:text-left">
           <div className="sm:col-span-2">
             <h2 className="text-2xl font-semibold">{title}</h2>
             <p className="text-muted-foreground">{text}</p>

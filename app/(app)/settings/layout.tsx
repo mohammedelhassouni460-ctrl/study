@@ -5,7 +5,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
   return (
     <>
       <PageHeader title="Paramètres" description="Ton profil, ton abonnement et tes données." />
-      <div className="grid gap-6 lg:grid-cols-[200px_minmax(0,1fr)]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[200px_minmax(0,1fr)]">
         <SettingsNav />
         <div className="grid min-w-0 content-start gap-6">{children}</div>
       </div>

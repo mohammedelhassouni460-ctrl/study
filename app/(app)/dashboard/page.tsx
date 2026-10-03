@@ -58,7 +58,7 @@ export default async function DashboardPage() {
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           icon={CalendarClockIcon}
           label="Prochain examen"
@@ -89,7 +89,7 @@ export default async function DashboardPage() {
         />
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-5">
+      <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-5">
         <div className="lg:col-span-3">
           <TodaySession session={data.todaySession} />
         </div>

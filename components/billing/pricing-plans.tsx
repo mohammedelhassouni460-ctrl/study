@@ -43,7 +43,7 @@ export function PricingPlans({ currentPlan, headingLevel = "h2" }: { currentPlan
         ))}
       </div>
 
-      <div className="mx-auto grid w-full max-w-4xl gap-6 md:grid-cols-2">
+      <div className="mx-auto grid grid-cols-[minmax(0,1fr)] w-full max-w-4xl gap-6 md:grid-cols-2">
         <Card className={cn(currentPlan === "free" && "border-primary/50")}>
           <CardHeader>
             <Heading className="text-lg leading-none font-semibold">{PRICING.free.name}</Heading>

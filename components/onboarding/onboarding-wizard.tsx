@@ -131,7 +131,7 @@ export function OnboardingWizard({ defaults }: { defaults: Draft }) {
           )}
 
           {step === 2 && (
-            <div role="radiogroup" aria-label="Objectif principal" className="grid gap-3 sm:grid-cols-2">
+            <div role="radiogroup" aria-label="Objectif principal" className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2">
               {GOALS.map((goal) => (
                 <ChoiceCard
                   key={goal.value}
