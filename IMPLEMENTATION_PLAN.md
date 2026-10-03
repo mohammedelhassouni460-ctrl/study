@@ -129,9 +129,13 @@ Les mutations simples (matières, profil, onboarding, sessions du planning) pass
 
 ## 9. Tests
 
-Unitaires (Vitest) : maîtrise, répétition espacée, scoring quiz, crédits, accès abonnement, schémas Zod,
-chunking, planner. E2E (Playwright) : signup, création de matière, upload de document, parcours quiz
-(nécessitent un Supabase local : `npx supabase start`).
+- Unitaires (Vitest, `npm test`) : maîtrise, répétition espacée, scoring quiz, crédits, plans, chunking,
+  validation des fichiers, synchronisation Stripe, normalisation des sorties IA.
+- Intégration (`npm run test:integration`) : isolation RLS entre deux utilisateurs réels (tables, storage,
+  fonctions RAG), réponses de quiz cachées, tables de facturation en lecture seule.
+- E2E (Playwright, `npm run test:e2e`) : auth, matières, upload, fiches, flashcards, quiz, chat, planning,
+  webhooks Stripe, paramètres, pages publiques, responsive. Un faux serveur Anthropic/Voyage
+  (`tests/mocks/ai-mock-server.mjs`) rend les parcours IA testables sans clé.
 
 ## 10. Phases
 
@@ -170,3 +174,15 @@ chunking, planner. E2E (Playwright) : signup, création de matière, upload de d
   tentative terminée.
 - **Mode examen** : coûte 25 crédits et compte dans la limite de 3 quiz/semaine du plan Gratuit.
 - **Langue** : interface en français ; code et identifiants en anglais.
+- **Chat** : réponse streamée en NDJSON (`sources` → `delta`* → `done`), la question et la réponse sont
+  enregistrées dans `chat_messages` avec les sources ; 1 crédit réservé avant l'appel, remboursé si rien
+  n'a été produit.
+- **Planning** : algorithme déterministe (`generateStudyPlan`), sans appel IA ni crédit ; régénérer remplace
+  les sessions encore « prévues » à partir d'aujourd'hui et conserve les sessions faites.
+- **Webhooks Stripe** : les événements `customer.subscription.*` sont appliqués depuis la charge utile signée
+  (idempotent, upsert par utilisateur) ; `checkout.session.completed` relit l'abonnement chez Stripe.
+  La suppression du compte est refusée tant qu'un abonnement est actif, pour éviter toute facturation orpheline.
+- **Grilles CSS** : une règle de base donne `minmax(0, 1fr)` aux grilles sans colonnes explicites, pour
+  que les titres longs se tronquent au lieu d'élargir la page sur mobile (testé par `responsive.spec.ts`).
+- **Seed** : `supabase/seed.sql` crée un compte démo local (`demo@studyos.local`) avec la matière
+  Microéconomie et ses 5 concepts ; jamais exécuté en production (`db push` ne l'applique pas).
