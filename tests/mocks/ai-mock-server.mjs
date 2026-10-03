@@ -123,6 +123,9 @@ function fakeEmbedding(text) {
   return v.map((x) => x / norm);
 }
 
+/** Emails "sent" through the fake Resend API, inspectable by tests. */
+const sentEmails = [];
+
 createServer((req, res) => {
   let raw = "";
   req.on("data", (c) => (raw += c));
@@ -130,6 +133,18 @@ createServer((req, res) => {
     const body = raw ? JSON.parse(raw) : {};
     if (req.url === "/health") {
       res.writeHead(200).end("ok");
+      return;
+    }
+    if (req.url === "/resend/emails" && req.method === "POST") {
+      sentEmails.push(body);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ id: `email_mock_${sentEmails.length}` }));
+      return;
+    }
+    if (req.url?.startsWith("/resend/_sent")) {
+      const to = new URL(req.url, "http://x").searchParams.get("to");
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(sentEmails.filter((e) => !to || [].concat(e.to).includes(to))));
       return;
     }
     if (req.url?.startsWith("/voyage/")) {

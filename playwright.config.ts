@@ -8,6 +8,8 @@ const PORT = Number(process.env.E2E_PORT ?? 3100);
 const MOCK_PORT = 4010;
 /** Test-only Stripe values: webhooks are signed locally with this secret. */
 export const E2E_STRIPE_WEBHOOK_SECRET = "whsec_e2e_local_test_secret";
+export const E2E_CRON_SECRET = "cron_e2e_local_test_secret";
+export const MOCK_URL = `http://127.0.0.1:${MOCK_PORT}`;
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -56,6 +58,9 @@ export default defineConfig({
             STRIPE_WEBHOOK_SECRET: E2E_STRIPE_WEBHOOK_SECRET,
             STRIPE_PRICE_PRO_MONTHLY: "price_e2e_monthly",
             STRIPE_PRICE_PRO_YEARLY: "price_e2e_yearly",
+            RESEND_API_KEY: "re_e2e_not_a_real_key",
+            RESEND_BASE_URL: `http://127.0.0.1:${MOCK_PORT}/resend`,
+            CRON_SECRET: E2E_CRON_SECRET,
           },
         },
       ],

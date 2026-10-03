@@ -45,6 +45,7 @@ avec le cours (avec sources) et planning de révision personnalisé. Un score de
 | Tableau de bord | Session du jour, examen à venir, progression, flashcards dues, série, XP, quiz récents, statistiques (Pro) |
 | Paiement | Stripe Checkout, Customer Portal, webhooks signés, plans Gratuit / Pro (mensuel ou annuel) |
 | Paramètres | Profil + photo, abonnement et crédits, notifications, export JSON (RGPD), suppression du compte |
+| Emails | Rappel quotidien des sessions du planning et bilan hebdomadaire (Resend + Vercel Cron), désactivables |
 | Marketing | Landing page, page Tarifs, FAQ, pages légales (modèles), sitemap, robots, image Open Graph |
 
 ---
@@ -172,7 +173,19 @@ ré-importe-les pour bénéficier de la recherche sémantique.
 Le plan Pro n'est **jamais** accordé par la redirection de succès : seul le webhook signé met à jour la
 table `subscriptions` (Stripe est la source de vérité).
 
-### 5. Rate limiting et analytics (facultatif)
+### 5. Emails de rappel et bilan hebdomadaire (facultatif)
+
+1. Crée une clé sur [resend.com](https://resend.com/api-keys) et vérifie ton domaine d'envoi.
+2. Renseigne `RESEND_API_KEY`, `EMAIL_FROM` et un `CRON_SECRET` aléatoire (`openssl rand -hex 24`).
+3. `vercel.json` planifie deux tâches (heures UTC) :
+   - `/api/cron/reminders` chaque jour à 6 h : la liste des sessions prévues aujourd'hui dans le planning ;
+   - `/api/cron/weekly-report` le lundi à 7 h : quiz, flashcards, sessions faites, maîtrise et concepts faibles.
+4. Chaque utilisateur choisit ses emails dans Paramètres › Notifications. Un même email n'est jamais
+   envoyé deux fois pour la même journée ou la même semaine (table `email_log`), même si la tâche est relancée.
+
+Test manuel : `curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/reminders`.
+
+### 6. Rate limiting et analytics (facultatif)
 
 - `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` : limites partagées entre instances (sinon en mémoire).
 - `NEXT_PUBLIC_POSTHOG_KEY` : envoie les événements produit (`user_signed_up`, `document_uploaded`,
@@ -201,11 +214,11 @@ table `subscriptions` (Stripe est la source de vérité).
 ## Tests
 
 ```bash
-npm test                    # 65 tests unitaires : maîtrise, répétition espacée, scoring, planner,
-                            # plans et crédits, chunking, validation des fichiers, Stripe, sorties IA
-npm run test:integration    # 8 tests RLS : isolation entre utilisateurs, storage, réponses cachées,
+npm test                    # 69 tests unitaires : maîtrise, répétition espacée, scoring, planner,
+                            # plans et crédits, chunking, validation des fichiers, Stripe, sorties IA, emails
+npm run test:integration    # 9 tests RLS : isolation entre utilisateurs, storage, réponses cachées,
                             # tables de facturation en lecture seule
-npm run test:e2e            # 20 tests E2E (desktop + mobile pour le smoke test)
+npm run test:e2e            # 21 tests E2E (desktop + mobile pour le smoke test)
 ```
 
 Les tests E2E nécessitent le Supabase local (`npm run db:start`). **Ils ne demandent aucune vraie clé** :
@@ -213,7 +226,7 @@ Playwright démarre un faux serveur Anthropic/Voyage (`tests/mocks/ai-mock-serve
 protocole de streaming que l'API, et signe lui-même les webhooks Stripe avec un secret de test. Ils
 couvrent : inscription → onboarding → matière → upload PDF/TXT → fiche → flashcards et révision → quiz et
 score → maîtrise → chat sourcé → planning → Pro via webhook → paramètres, export et suppression du compte,
-limites du plan Gratuit, pages publiques, en-têtes de sécurité et absence de défilement horizontal sur mobile.
+emails de rappel et bilan hebdomadaire, limites du plan Gratuit, pages publiques, en-têtes de sécurité et absence de défilement horizontal sur mobile.
 
 Si Chromium est déjà installé ailleurs : `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/chemin/vers/chromium npm run test:e2e`.
 
@@ -229,7 +242,7 @@ app/
   auth/          callback OAuth et confirmation email
   onboarding/
   api/           documents, ai (summary, flashcards, quiz, chat), flashcards/review, quiz/submit,
-                 study-plan/generate, stripe (checkout, portal, webhook), account/export
+                 study-plan/generate, stripe (checkout, portal, webhook), account/export, cron/[job]
 components/      ui (shadcn) + composants par domaine
 lib/
   ai/            client Anthropic, prompts, schémas Zod, générateurs, crédits
@@ -238,6 +251,7 @@ lib/
   documents/     validation, extraction (unpdf, mammoth), chunking, pipeline, concepts
   chat/          recherche RAG (vectorielle ou plein-texte)
   stripe/        client et synchronisation des abonnements
+  email/         envoi (Resend), modèles d'emails, tâches de rappel et de bilan
   supabase/      clients serveur / navigateur / admin (service role, serveur uniquement), proxy
   actions/       Server Actions (matières, planning, paramètres…)
   validations/   schémas Zod partagés client/serveur
@@ -310,8 +324,8 @@ Coût en crédits : fiche 10, flashcards 10, quiz 10, mode examen 25, message de
 - Les **PDF scannés** (images sans couche texte) ne sont pas lus : un OCR serait nécessaire.
 - Le traitement d'un document se fait dans la requête (jusqu'à 5 min) ; pour de très gros volumes, une
   file de tâches (Supabase Queues, Inngest…) serait préférable.
-- Les **emails** de rappel et le bilan hebdomadaire sont paramétrables mais pas encore envoyés
-  (brancher un service type Resend + une tâche planifiée).
+- Les tâches d'emails traitent les utilisateurs dans une seule exécution (jusqu'à 5 min) : au-delà de
+  quelques milliers d'abonnés, il faudra les découper en lots ou passer par une file de tâches.
 - Les **pages légales** sont des modèles marqués « à vérifier juridiquement ».
 - La répétition espacée est un SM-2 simplifié ; elle peut être remplacée par FSRS derrière la même
   signature `scheduleNextReview()`.
@@ -324,6 +338,7 @@ Coût en crédits : fiche 10, flashcards 10, quiz 10, mode examen 25, message de
 | --- | --- |
 | « Configuration invalide ou manquante » | Une variable Supabase manque dans `.env.local` |
 | « L'IA n'est pas encore configurée » | Ajoute `ANTHROPIC_API_KEY` puis redémarre `npm run dev` |
+| Aucun email reçu | `RESEND_API_KEY`, `CRON_SECRET` et domaine d'envoi vérifié ; la tâche renvoie `skipped` sans clé |
 | Le plan reste Gratuit après paiement | Le webhook n'arrive pas : vérifie `stripe listen` / l'endpoint et `STRIPE_WEBHOOK_SECRET` |
 | Upload refusé | Format non pris en charge, fichier > 15 Mo ou quota mensuel atteint |
 | Document en échec « aucun texte » | PDF scanné : exporte-le en PDF texte ou en DOCX |

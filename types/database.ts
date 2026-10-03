@@ -221,6 +221,30 @@ export type Database = {
           },
         ];
       };
+      email_log: {
+        Row: {
+          id: string;
+          kind: string;
+          period_key: string;
+          sent_at: string;
+          user_id: string;
+        };
+        Insert: {
+          id?: string;
+          kind: string;
+          period_key: string;
+          sent_at?: string;
+          user_id: string;
+        };
+        Update: {
+          id?: string;
+          kind?: string;
+          period_key?: string;
+          sent_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       flashcard_reviews: {
         Row: {
           flashcard_id: string;

@@ -186,3 +186,7 @@ Les mutations simples (matières, profil, onboarding, sessions du planning) pass
   que les titres longs se tronquent au lieu d'élargir la page sur mobile (testé par `responsive.spec.ts`).
 - **Seed** : `supabase/seed.sql` crée un compte démo local (`demo@studyos.local`) avec la matière
   Microéconomie et ses 5 concepts ; jamais exécuté en production (`db push` ne l'applique pas).
+- **Emails** : Resend via son API HTTP (pas de SDK), déclenché par Vercel Cron (`vercel.json`) sur
+  `/api/cron/[job]`, protégé par `CRON_SECRET` (comparaison à temps constant). La table serveur `email_log`
+  (unique par utilisateur, type et période) garantit qu'un rappel ou un bilan n'est envoyé qu'une fois,
+  même si la tâche est relancée ; la ligne est supprimée si l'envoi échoue, pour réessayer au passage suivant.

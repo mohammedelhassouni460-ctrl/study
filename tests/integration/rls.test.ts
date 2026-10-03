@@ -158,6 +158,13 @@ describe("server-only data", () => {
     expect(reserve.error).not.toBeNull();
   });
 
+  it("the email log is invisible to users", async () => {
+    const { data, error } = await alice.client.from("email_log").select("id");
+    expect(error !== null || (data ?? []).length === 0).toBe(true);
+    const insert = await alice.client.from("email_log").insert({ user_id: alice.id, kind: "weekly_report", period_key: "x" });
+    expect(insert.error).not.toBeNull();
+  });
+
   it("anonymous visitors see nothing", async () => {
     const anon = createClient<Database>(URL, ANON, { auth: { persistSession: false } });
     const { data, error } = await anon.from("subjects").select("id");

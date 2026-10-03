@@ -25,6 +25,10 @@ const serverSchema = z.object({
   STRIPE_PRICE_PRO_MONTHLY: z.string().min(1).optional(),
   STRIPE_PRICE_PRO_YEARLY: z.string().min(1).optional(),
 
+  RESEND_API_KEY: z.string().min(1).optional(),
+  EMAIL_FROM: z.string().min(3).default("StudyOS <onboarding@resend.dev>"),
+  CRON_SECRET: z.string().min(16).optional(),
+
   UPSTASH_REDIS_REST_URL: z.url().optional(),
   UPSTASH_REDIS_REST_TOKEN: z.string().min(1).optional(),
 
