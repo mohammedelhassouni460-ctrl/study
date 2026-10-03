@@ -27,6 +27,8 @@ export interface DashboardData {
   studyMinutesThisWeek: number;
   streak: number;
   xp: number;
+  /** Last 8 weeks, oldest first (Pro statistics). */
+  weekly: { weekStart: string; quizAverage: number | null; quizzes: number; reviews: number }[];
 }
 
 export async function getDashboardData(userId: string, timezone: string, dailyMinutes: number): Promise<DashboardData> {
@@ -140,6 +142,23 @@ export async function getDashboardData(userId: string, timezone: string, dailyMi
       flashcardReviews: reviews.length,
       quizCorrectAnswers: attempts.reduce((sum, a) => sum + a.score, 0),
       sessionsDone: doneSessions.length,
+    }),
+    weekly: Array.from({ length: 8 }, (_, i) => {
+      const start = addDays(today, -7 * (7 - i) - 6);
+      const end = addDays(start, 6);
+      const inRange = (iso: string) => {
+        const day = toISODate(new Date(iso), timezone);
+        return day >= start && day <= end;
+      };
+      const weekAttempts = attempts.filter((a) => inRange(a.completed_at!));
+      return {
+        weekStart: start,
+        quizzes: weekAttempts.length,
+        quizAverage: weekAttempts.length
+          ? Math.round(weekAttempts.reduce((sum, a) => sum + Number(a.percentage), 0) / weekAttempts.length)
+          : null,
+        reviews: reviews.filter((r) => inRange(r.reviewed_at)).length,
+      };
     }),
   };
 }

@@ -10,6 +10,7 @@ import {
   TrophyIcon,
 } from "lucide-react";
 
+import { ProgressStats } from "@/components/dashboard/progress-stats";
 import { TodaySession } from "@/components/dashboard/today-session";
 import { EmptyState } from "@/components/shared/empty-state";
 import { MasteryBar } from "@/components/shared/mastery";
@@ -18,6 +19,7 @@ import { StatCard } from "@/components/shared/stat-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireOnboardedUser } from "@/lib/auth/session";
+import { getBillingState } from "@/lib/billing/access";
 import { getDashboardData } from "@/lib/data/dashboard";
 import { formatFrenchDate } from "@/lib/learning/dates";
 import { subjectColor } from "@/lib/subjects/colors";
@@ -32,7 +34,10 @@ function formatMinutes(total: number) {
 
 export default async function DashboardPage() {
   const { user, profile } = await requireOnboardedUser();
-  const data = await getDashboardData(user.id, profile.timezone, profile.daily_study_minutes);
+  const [data, billing] = await Promise.all([
+    getDashboardData(user.id, profile.timezone, profile.daily_study_minutes),
+    getBillingState(user.id),
+  ]);
   const firstName = profile.full_name?.split(" ")[0];
 
   return (
@@ -143,7 +148,7 @@ export default async function DashboardPage() {
               {data.recentAttempts.map((attempt) => (
                 <li key={attempt.id} className="flex items-center justify-between gap-4 py-3 text-sm">
                   <Link
-                    href={`/subjects/${attempt.subjectId}/quiz/${attempt.quizId}`}
+                    href={`/subjects/${attempt.subjectId}/quiz/${attempt.quizId}?attempt=${attempt.id}`}
                     className="min-w-0 truncate font-medium hover:text-primary"
                   >
                     {attempt.title}
@@ -160,6 +165,8 @@ export default async function DashboardPage() {
           )}
         </CardContent>
       </Card>
+
+      <ProgressStats weekly={data.weekly} locked={!billing.limits.analytics} />
     </>
   );
 }
