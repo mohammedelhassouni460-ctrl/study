@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 
 import { expect, type Page } from "@playwright/test";
@@ -44,7 +45,6 @@ export async function uploadFixture(page: Page, file = "microeconomie-chapitre-2
 
 /** Local Supabase admin access for tests (reads the demo keys from .env.local). */
 function localEnv(): Record<string, string> {
-  const fs = require("node:fs") as typeof import("node:fs");
   const file = path.join(__dirname, "..", "..", ".env.local");
   const out: Record<string, string> = {};
   for (const line of fs.readFileSync(file, "utf8").split("\n")) {
